@@ -23,7 +23,7 @@ Awarded research grant funding by the **Undergraduate Research Scholars Program 
 
 ---
 
-## 🔄 End-to-End Data Pipeline (Batch ETL)
+## End-to-End Data Pipeline (Batch ETL)
 
 The offline data pipeline transforms raw, unstructured web data from multiple external sources into a highly structured 3NF relational database ready for sub-20ms inference:
 
@@ -31,29 +31,22 @@ The offline data pipeline transforms raw, unstructured web data from multiple ex
 flowchart LR
     Step1["1️⃣ Spotify Scraping\n• Curated Playlists\n• Extracts Title & Artist"] --> Step2["2️⃣ Genius Scraping\n• Scrapes full raw lyrics\n• Matches Title + Artist"]
     
-    Step2 --> Step3["3️⃣ Cleaning & Filtering\n• Strips live intros & ads\n• Removes TED/podcasts\n• English language filter\n(28k ➔ 23k Tracks)"]
+    Step2 --> Step3["3️⃣ Cleaning & Filtering\n• Strips live intros & ads\n• Removes TED/podcasts\n• English language filter\n(28k to 23k Tracks)"]
     
     Step3 --> Step4["4️⃣ LLM Narrative Extraction\n(OpenAI GPT-Luna)\n• Generates story summaries\n• Extracts core theme tags"]
     
     Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n(QualIT Methodology)\n• Semantic clustering\n• 12 Macro × 8 Micro Chips"]
     
     Step5 --> Step6[("6️⃣ Neon Cloud PostgreSQL\n• Ingests into 3NF schema\n• Songs, Lyrics & Mappings\n• Creates B-Tree Indexes")]
-
-## System Architecture 
-```mermaid
-flowchart TD
-    User["User Input\n(Narrative Story / Emotion Chips)"] --> FastAPI["FastAPI Server\n(Google Cloud Run Container)"]
-    
-    FastAPI -->|"1. Story Text"| GPT_Chips["OpenAI GPT-5.6 Luna\n(Auto-Suggests 3-5 Chip IDs)"]
-    GPT_Chips --> DB
-    
-    FastAPI -->|"2. Selected Chip IDs"| DB["Stage 1: Fast SQL Candidate Filtering\n(Neon Cloud PostgreSQL-3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n• 18.6ms (66% Latency Reduction)"]
-    
-    DB -->|"Top 30 Candidates"| Curation["Stage 2: LLM Narrative Curation\n• In-Context Reasoning (Top 3 Songs)\n• 1:1 English Curation Reasons\n• 2nd-Stage Conversational Refine"]
-    
-    Curation --> UI["Responsive Interactive Web UI\n(chip_eng.html)"]
 ```
 
+### Pipeline Workflow Breakdown:
+1. **Track Metadata Extraction**: Scraped song titles and artist names across hundreds of curated Spotify playlists representing diverse mood niches.
+2. **Lyrics Scraping**: Automated Genius API/HTML scrapers to retrieve full raw lyrical texts matching track metadata.
+3. **Data Scrubbing & Purity Filtering**: Stripped noisy bracket tags (`[Instrumental]`, `[Chorus]`), removed non-musical transcripts (TED talks, podcasts), and filtered for pure English narrative songs (scrubbed ~5,000 noise records).
+4. **LLM Narrative Summarization**: Utilized GPT-Luna to generate dense 2~3 sentence character-arc summaries and qualitative emotional keywords for every track.
+5. **Hierarchical 96-Chip Mapping**: Applied semantic dictionary matching inspired by QualIT to categorize raw theme tokens into the structured 2-tier ontology ($12 \text{ Themes} \times 8 \text{ Nuance Chips}$).
+6. **Relational DB Ingestion (3NF)**: Batch-loaded 23,000+ records into Neon PostgreSQL across normalized tables (`songs`, `lyrics_info`, `song_chip_mappings`) and constructed B-Tree indexes for instant search.
 
 ---
 
