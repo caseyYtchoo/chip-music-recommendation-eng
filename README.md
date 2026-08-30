@@ -35,7 +35,7 @@ flowchart LR
     
     Step3 --> Step4["4️⃣ LLM Narrative Extraction\n(OpenAI GPT-5.6 Luna)\n• Generates story summaries\n• Extracts core theme tags"]
     
-    Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n• Semantic clustering\n• 12 Macro × 8 Micro Chips"\n(QualIT Methodology)]
+    Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n• Semantic clustering\n• 12 Macro × 8 Micro Chips\n(QualIT Methodology)"]
     
     Step5 --> Step6[("6️⃣ Neon Cloud PostgreSQL\n• Ingests into 3NF schema\n• Songs, Lyrics & Mappings\n• Creates B-Tree Indexes")]
 ```
