@@ -31,7 +31,7 @@ flowchart TD
     FastAPI -->|"1. Story Text"| GPT_Chips["OpenAI GPT-5.6 Luna\n(Auto-Suggests 3-5 Chip IDs)"]
     GPT_Chips --> DB
     
-    FastAPI -->|"2. Selected Chip IDs"| DB["Stage 1: Fast SQL Candidate Filtering\nNeon Cloud PostgreSQL (3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n18.6ms (66% Latency Reduction)"]
+    FastAPI -->|"2. Selected Chip IDs"| DB["Stage 1: Fast SQL Candidate Filtering\n(Neon Cloud PostgreSQL-3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n• 18.6ms (66% Latency Reduction)"]
     
     DB -->|"Top 30 Candidates"| Curation["Stage 2: LLM Narrative Curation\n• In-Context Reasoning (Top 3 Songs)\n• 1:1 English Curation Reasons\n• 2nd-Stage Conversational Refine"]
     
