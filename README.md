@@ -91,7 +91,7 @@ flowchart LR
   JOIN songs s ON w.song_id = s.song_id
   JOIN lyrics_info l ON w.song_id = l.song_id
   ORDER BY w.match_count DESC, w.jaccard_score DESC;
-
+```
 
 ---
 ## Relational Database Schema (3NF)
