@@ -782,6 +782,127 @@
       background: var(--btn-neon-yellow-hover);
       transform: translateY(-2px);
     }
+    /* ℹ️ How It Works Modal */
+.info-btn {
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  vertical-align: middle;
+  margin-left: 12px;
+}
+.info-btn:hover {
+  background: rgba(250, 204, 21, 0.2);
+  border-color: #facc15;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.modal-panel {
+  background: #090d1a;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 60px rgba(250, 204, 21, 0.2);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #1e293b;
+}
+.modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #facc15;
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+.modal-close:hover { color: #facc15; }
+
+.modal-section {
+  margin-bottom: 24px;
+}
+.modal-section-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.modal-step-num {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.modal-step-text {
+  font-size: 14.5px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  padding-top: 2px;
+}
+.modal-step-text b { color: #f8fafc; }
+.modal-divider {
+  border: none;
+  border-top: 1px solid #1e293b;
+  margin: 20px 0;
+}
+.modal-arrow {
+  text-align: center;
+  color: #facc15;
+  font-size: 18px;
+  margin: 4px 0;
+}
   </style>
 </head>
 <body>
@@ -797,7 +918,7 @@
 
   <div class="container">
     <header>
-      <h1>96-Chip Music Recommender</h1>
+      <h1>96-Chip Music Recommender <button class="info-btn" onclick="openInfoModal()">ℹ️ How it works</button></h1>
       <p class="sub">Lyrics-driven narrative and emotional curation across 23,000+ tracks</p>
     </header>
 
@@ -1238,5 +1359,76 @@
 
     window.onload = loadTaxonomy;
   </script>
+
+  <!-- ℹ️ How It Works Modal -->
+<div class="modal-overlay" id="infoModal" onclick="if(event.target===this)closeInfoModal()">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="modal-title">ℹ️ How This Works</span>
+      <button class="modal-close" onclick="closeInfoModal()">✕</button>
+    </div>
+    <!-- Section 1: Data Pipeline -->
+    <div class="modal-section">
+      <div class="modal-section-title">1. How the Data Was Collected</div>
+      <div class="modal-step">
+        <div class="modal-step-num">1</div>
+        <div class="modal-step-text"><b>Spotify API</b> — Extracted song titles and artist names from hundreds of curated Spotify playlists.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">2</div>
+        <div class="modal-step-text"><b>Genius Scraping</b> — Automatically scraped full lyrics for each track using the Genius API and HTML scraper.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">3</div>
+        <div class="modal-step-text"><b>Data Cleaning</b> — Filtered out ~5,000 noisy records: instrumentals, non-English lyrics, and live recordings.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">4</div>
+        <div class="modal-step-text"><b>GPT Summarization</b> — GPT-5.6 Luna analyzed each song's raw lyrics and generated a 2~3 sentence narrative arc summary + multi-dimensional lyrical theme tags.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">5</div>
+        <div class="modal-step-text"><b>96-Chip Mapping</b> — Theme tags were mapped into a structured 2-tier ontology: 12 Macro Themes × 8 Micro Emotion Chips.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">6</div>
+        <div class="modal-step-text"><b>PostgreSQL DB</b> — 23,000+ records loaded into 5 normalized tables on Neon Cloud PostgreSQL with B-Tree indexing for fast retrieval.</div>
+      </div>
+    </div>
+    <hr class="modal-divider">
+    <!-- Section 2: System Structure -->
+    <div class="modal-section">
+      <div class="modal-section-title">2. How the Recommendation Works</div>
+      <div class="modal-step">
+        <div class="modal-step-num">1</div>
+        <div class="modal-step-text"><b>You select emotion chips</b> — or type a story and let GPT auto-suggest the best chips for your narrative.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">2</div>
+        <div class="modal-step-text"><b>Stage 1 — Fast SQL Filtering</b> — The selected chip IDs are queried against 23,000+ songs using B-Tree indexed SQL. A Jaccard Purity Score ranks songs where your emotions are the core theme (not just a passing mention). Top 30 candidates retrieved.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">3</div>
+        <div class="modal-step-text"><b>Stage 2 — LLM Curation</b> — GPT reads the Top 30 candidates' narrative summaries in-context and curates the final Top 3 songs with personalized 1:1 reasons.</div>
+      </div>
+      <div class="modal-arrow">↓</div>
+      <div class="modal-step">
+        <div class="modal-step-num">4</div>
+        <div class="modal-step-text"><b>2nd-Stage Feedback</b> — Not satisfied? Type feedback like <i>"More melancholic"</i> and GPT re-ranks the same 30 candidates with your new direction.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function openInfoModal() { document.getElementById("infoModal").classList.add("open"); }
+  function closeInfoModal() { document.getElementById("infoModal").classList.remove("open"); }
+</script>
 </body>
 </html>
