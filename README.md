@@ -114,16 +114,46 @@ The database is strictly normalized into **Third Normal Form (3NF)** on PostgreS
 ## Getting Started & Local Development
 
 ### 1. Clone Repository & Install Dependencies
-```bash
+
 git clone https://github.com/caseyYtchoo/chip-music-recommendation-eng.git
 cd chip-music-recommendation-eng
 pip install -r requirements.txt psycopg2-binary
 
-### 1. Clone Repository & Install Dependencies
-```bash
-git clone https://github.com/caseyYtchoo/chip-music-recommendation-eng.git
-cd chip-music-recommendation-eng
-pip install -r requirements.txt psycopg2-binary
+### 2. Configure Environment Variables
 
-## References
-- Kapoor, S., Gil, A., Bhaduri, S., Mittal, A., & Mulkar, R. (2024). *Qualitative Insights Tool (QualIT): LLM Enhanced Topic Modeling*. arXiv preprint. [https://arxiv.org/abs/2410.00290](https://arxiv.org/abs/2409.15626)
+export OPENAI_API_KEY="your-openai-api-key"
+export DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+
+### 3. Run Local Server
+
+uvicorn chip_eng:app --host 0.0.0.0 --port 8080 --reload
+
+Navigate to `http://localhost:8080` in your web browser.
+
+---
+
+## 🐳 Docker Deployment (Google Cloud Run)
+
+To build and deploy the containerized service directly to Google Cloud Run:
+
+gcloud run deploy music-galaxy-en \
+  --source . \
+  --project gen-lang-client-0421276732 \
+  --region asia-northeast3 \
+  --set-env-vars="OPENAI_API_KEY=...,DATABASE_URL=..." \
+  --allow-unauthenticated
+
+---
+
+## 📚 References
+
+* Kapoor, S., Gil, A., Bhaduri, S., Mittal, A., & Mulkar, R. (2024). *Qualitative Insights Tool (QualIT): LLM Enhanced Topic Modeling*. arXiv preprint. [https://arxiv.org/abs/2410.00290](https://arxiv.org/abs/2410.00290)
+
+---
+
+## 🎓 Author & Academic Attribution
+
+* **Author**: **Yeonseo (Casey) Tchoo**
+* **Affiliation**: George Mason University Korea, Computational and Data Sciences (Honors College)
+* **Funding**: Funded by the **GMU Undergraduate Research Scholars Program (URSP)**
+* **Contact**: [caseytchoo@gmail.com](mailto:caseytchoo@gmail.com) | [LinkedIn Profile](https://www.linkedin.com/in/casey-tchoo-39474a392)
