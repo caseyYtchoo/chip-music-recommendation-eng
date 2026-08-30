@@ -39,6 +39,39 @@ flowchart TD
 ```
 
 
+---
+
+## 🛠️ Engineering Challenges & Problem Solving
+
+### 1. Vector Embedding Dilution vs. Structured 96-Theme Ontology
+* **The Problem**: High-dimensional dense embeddings (Cosine similarity) struggled with subtle narrative nuances (e.g., *“unrequited longing”* vs. *“vengeful breakup anger”* were clustered into the same dense vector space as generic "sad love songs").
+* **The Solution**: Designed a structured **96-Chip Emotion Taxonomy ($12 \times 8$)**. Built a data-driven semantic dictionary mapping thousands of raw lyrical tokens to discrete chip IDs, enabling deterministic, noise-free candidate retrieval.
+
+### 2. Multi-Tag Spam Dilution vs. Jaccard Index Ranking
+* **The Problem**: Ranking by raw matching counts biased results toward songs with 15+ generic tags, resulting in poor recommendation purity.
+* **The Solution**: Implemented the **Jaccard Purity Index**:
+  $$\text{Jaccard Index} = \frac{|\text{Selected Chips} \cap \text{Song Inherent Chips}|}{|\text{Song Total Inherent Chips}|}$$
+  This ranks songs where the user's emotional query represents the *core focus* of the lyrics rather than a secondary mention.
+
+### 3. PostgreSQL Query Latency Optimization (54.3ms $\rightarrow$ 18.6ms, 66% Speedup)
+* **The Problem**: Profiling with `EXPLAIN ANALYZE` revealed that joining large `lyrics_summary` text columns across 23,000 rows during grouping/filtering created a memory bottleneck (137 buffer reads, 54.3ms latency).
+* **The Solution**: Applied **Late Row Lookup**:
+  ```sql
+  WITH matched_songs AS (
+      SELECT m.song_id,
+             COUNT(CASE WHEN m.chip_id = ANY(%s) THEN 1 END) AS match_count,
+             ROUND(COUNT(CASE WHEN m.chip_id = ANY(%s) THEN 1 END)::numeric / COUNT(m.chip_id)::numeric, 3) AS jaccard_score
+      FROM song_chip_mappings m
+      WHERE m.song_id IN (SELECT song_id FROM song_chip_mappings WHERE chip_id = ANY(%s))
+      GROUP BY m.song_id
+      ORDER BY match_count DESC, jaccard_score DESC
+      LIMIT 30
+  )
+  SELECT s.song_id, s.title, s.artist, l.lyrics_summary, l.raw_themes, w.jaccard_score
+  FROM matched_songs w
+  JOIN songs s ON w.song_id = s.song_id
+  JOIN lyrics_info l ON w.song_id = l.song_id
+  ORDER BY w.match_count DESC, w.jaccard_score DESC;
 
 
 
