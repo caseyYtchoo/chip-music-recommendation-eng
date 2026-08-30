@@ -31,11 +31,11 @@ The offline data pipeline transforms raw, unstructured web data from multiple ex
 flowchart LR
     Step1["1️⃣ Spotify Scraping\n• Curated Playlists\n• Extracts Title & Artist"] --> Step2["2️⃣ Genius Scraping\n• Scrapes full raw lyrics\n• Matches Title + Artist"]
     
-    Step2 --> Step3["3️⃣ Cleaning & Filtering\n• Strips live intros & ads\n• Removes TED/podcasts\n• English language filter\n(28k to 23k Tracks)"]
+    Step2 --> Step3["3️⃣ Cleaning & Filtering\n• Strips live intros & ads\n• English language filter\n(28k to 23k Tracks)"]
     
-    Step3 --> Step4["4️⃣ LLM Narrative Extraction\n(OpenAI GPT-Luna)\n• Generates story summaries\n• Extracts core theme tags"]
+    Step3 --> Step4["4️⃣ LLM Narrative Extraction\n(OpenAI GPT-5.6 Luna)\n• Generates story summaries\n• Extracts core theme tags"]
     
-    Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n(QualIT Methodology)\n• Semantic clustering\n• 12 Macro × 8 Micro Chips"]
+    Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n• Semantic clustering\n• 12 Macro × 8 Micro Chips"]\n(QualIT Methodology)
     
     Step5 --> Step6[("6️⃣ Neon Cloud PostgreSQL\n• Ingests into 3NF schema\n• Songs, Lyrics & Mappings\n• Creates B-Tree Indexes")]
 ```
