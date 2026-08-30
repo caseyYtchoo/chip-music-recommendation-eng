@@ -41,21 +41,30 @@ flowchart TD
 
 ---
 
-## 🛠️ Engineering Challenges & Problem Solving
+## Engineering Challenges & Problem Solving
 
-### 1. Vector Embedding Dilution vs. Structured 96-Theme Ontology
-* **The Problem**: High-dimensional dense embeddings (Cosine similarity) struggled with subtle narrative nuances (e.g., *“unrequited longing”* vs. *“vengeful breakup anger”* were clustered into the same dense vector space as generic "sad love songs").
-* **The Solution**: Designed a structured **96-Chip Emotion Taxonomy ($12 \times 8$)**. Built a data-driven semantic dictionary mapping thousands of raw lyrical tokens to discrete chip IDs, enabling deterministic, noise-free candidate retrieval.
+### 1. Robust Data Cleaning: Scrubbing 28,000+ Unstructured Raw Transcripts
+* **The Problem**: Raw web-scraped lyrics from Genius and Spotify playlists contained severe data noise: non-musical TED talk transcripts, podcast dialogue scripts, pure instrumental tracks (`[Instrumental]`), live recording intros (`(Live at Wembley)`), and mixed non-English lyrics (Japanese, Spanish, etc,.). These noisy records corrupted emotional indexing and degraded recommendation quality.
+* **The Solution**: Engineered a multi-stage automated batch preprocessing pipeline combining **heuristic regex cleaners, lyrical repetition thresholds, and language detection filters**. Successfully filtered out ~5,000 corrupted records, yielding a clean, high-purity corpus of **23,000+ narrative English songs**.
 
-### 2. Multi-Tag Spam Dilution vs. Jaccard Index Ranking
-* **The Problem**: Ranking by raw matching counts biased results toward songs with 15+ generic tags, resulting in poor recommendation purity.
-* **The Solution**: Implemented the **Jaccard Purity Index** to measure emotional concentration:
+### 2. Semantic Collapse in Dense Vector Embeddings vs. Structured 96-Chip Ontology
+* **The Problem (Baseline Failure: `Sentence-BERT all-MiniLM-L6-v2`)**: 
+  * In our baseline experiments, standard dense embedding models (**`Sentence-BERT all-MiniLM-L6-v2`**) using Cosine Similarity failed significantly on lyrical text.
+  * Poetic metaphors, repetitive choruses, and slang distorted the 384-dimensional vector space. Consequently, completely distinct emotional nuances—such as *"vengeful breakup anger"* vs. *"quiet melancholic resignation"*—were collapsed into the exact same dense vector cluster.
+  * Complex narrative queries (e.g., *"quietly sacrificing for loved ones with unresolved guilt"*) consistently returned surface-level keyword false positives.
+* **The Solution**: 
+  * Replaced uninterpretable black-box vector distance with a **structured 96-Chip Hierarchical Emotion Taxonomy ($12 \text{ Domains} \times 8 \text{ Micro Chips}$)**, inspired by LLM topic modeling methodologies (QualIT).
+  * Built a deterministic semantic mapping that translates thousands of raw lyrical tokens into discrete, noise-free ontology chips.
+
+### 3. Multi-Tag Spam Dilution vs. Jaccard Purity Index Ranking
+* **The Problem**: Ranking candidates solely by raw matching counts biased results toward songs with 15+ broad, generic tags, drastically lowering recommendation purity.
+* **The Solution**: Formulated the **Jaccard Purity Index** to score songs based on emotional concentration:
   ```text
   Jaccard Purity Score = |Selected Chips ∩ Song Inherent Chips| / |Song Total Inherent Chips|
 
-### 3. PostgreSQL Query Latency Optimization (54.3ms $\rightarrow$ 18.6ms, 66% Speedup)
-* **The Problem**: Profiling with `EXPLAIN ANALYZE` revealed that joining large `lyrics_summary` text columns across 23,000 rows during grouping/filtering created a memory bottleneck (137 buffer reads, 54.3ms latency).
-* **The Solution**: Applied **Late Row Lookup**:
+### 4. PostgreSQL Query Latency Optimization (54.3ms $\rightarrow$ 18.6ms, 66% Speedup)
+* **The Problem**: Profiling with `EXPLAIN ANALYZE` revealed that joining large `lyrics_summary` text columns across 23,000 rows during grouping and sorting created a memory bottleneck (137 buffer reads, 54.3ms latency).
+* **The Solution**: Applied **Late Row Lookup (CTE)** to defer heavy text joins until after top-30 candidate IDs are filtered via B-Tree index:
   ```sql
   WITH matched_songs AS (
       SELECT m.song_id,
@@ -72,8 +81,6 @@ flowchart TD
   JOIN songs s ON w.song_id = s.song_id
   JOIN lyrics_info l ON w.song_id = l.song_id
   ORDER BY w.match_count DESC, w.jaccard_score DESC;
-
-
 
 ## References
 - Kapoor, S., Gil, A., Bhaduri, S., Mittal, A., & Mulkar, R. (2024). *Qualitative Insights Tool (QualIT): LLM Enhanced Topic Modeling*. arXiv preprint. [https://arxiv.org/abs/2410.00290](https://arxiv.org/abs/2409.15626)
