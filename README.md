@@ -26,16 +26,16 @@ Awarded research grant funding by the **Undergraduate Research Scholars Program 
 ## System Architecture & Data Pipeline
 ```mermaid
 flowchart TD
-    User["👤 User Input\n(Narrative Story / Emotion Chips)"] --> FastAPI["⚡ FastAPI Server\n(Google Cloud Run Container)"]
+    User["User Input\n(Narrative Story / Emotion Chips)"] --> FastAPI["FastAPI Server\n(Google Cloud Run Container)"]
     
-    FastAPI -->|"1. Story Text"| GPT_Chips["🤖 OpenAI GPT-Luna\n(Auto-Suggests 3-5 Chip IDs)"]
+    FastAPI -->|"1. Story Text"| GPT_Chips["OpenAI GPT-5.6 Luna\n(Auto-Suggests 3-5 Chip IDs)"]
     GPT_Chips --> DB
     
-    FastAPI -->|"2. Selected Chip IDs"| DB["🗄️ Neon Cloud PostgreSQL (3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n⏱️ 18.6ms (66% Latency Reduction)"]
+    FastAPI -->|"2. Selected Chip IDs"| DB["Neon Cloud PostgreSQL (3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n18.6ms (66% Latency Reduction)"]
     
-    DB -->|"Top 30 Candidates"| Curation["✨ Stage 2: LLM Narrative Curation\n• In-Context Reasoning (Top 3 Songs)\n• 1:1 English Curation Reasons\n• 2nd-Stage Conversational Refine"]
+    DB -->|"Top 30 Candidates"| Curation["Stage 2: LLM Narrative Curation\n• In-Context Reasoning (Top 3 Songs)\n• 1:1 English Curation Reasons\n• 2nd-Stage Conversational Refine"]
     
-    Curation --> UI["🌐 Responsive Interactive Web UI\n(chip_eng.html)"]
+    Curation --> UI["Responsive Interactive Web UI\n(chip_eng.html)"]
 ```
 
 
