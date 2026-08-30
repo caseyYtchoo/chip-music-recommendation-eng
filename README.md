@@ -50,6 +50,22 @@ flowchart LR
 
 ---
 
+## Online Real-Time Serving Architecture (2-Stage Hybrid)
+
+```mermaid
+flowchart TD
+    User["User Input\n(Narrative Story / Emotion Chips)"] --> FastAPI["FastAPI Server\n(Google Cloud Run Container)"]
+    
+    FastAPI -->|"1. Story Text"| GPT_Chips["OpenAI GPT-5.6 Luna\n• Analyzes narrative emotional arc\n• Auto-suggests 3~5 emotion chips"]
+    GPT_Chips --> DB
+    
+    FastAPI -->|"2. Selected Chip IDs"| DB["Stage 1: Fast SQL Candidate Filtering\n(Neon Cloud PostgreSQL - 3NF Schema)\n• B-Tree Index: idx_song_chip_chip_id\n• Late Row Lookup (CTE)\n• Jaccard Purity Index Ranking\n• Sub-20ms Latency (66% Speedup)"]
+    
+    DB -->|"Top 30 Candidates"| Curation["Stage 2: LLM Narrative Curation\n(OpenAI GPT In-Context Reasoning)\n• Curates Top 3 Best-Match Songs\n• 1:1 English Curation Reasons\n• 2nd-Stage Conversational Refinement"]
+    
+    Curation --> UI["Responsive Interactive Web UI\n(chip_eng.html)"]
+```
+---
 ## Engineering Challenges & Problem Solving
 
 ### 1. Robust Data Cleaning: Scrubbing 28,000+ Unstructured Raw Transcripts
