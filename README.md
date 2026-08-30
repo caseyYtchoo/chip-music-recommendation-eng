@@ -23,7 +23,23 @@ Awarded research grant funding by the **Undergraduate Research Scholars Program 
 
 ---
 
-## System Architecture & Data Pipeline
+## 🔄 End-to-End Data Pipeline (Batch ETL)
+
+The offline data pipeline transforms raw, unstructured web data from multiple external sources into a highly structured 3NF relational database ready for sub-20ms inference:
+
+```mermaid
+flowchart LR
+    Step1["1️⃣ Spotify Scraping\n• Curated Playlists\n• Extracts Title & Artist"] --> Step2["2️⃣ Genius Scraping\n• Scrapes full raw lyrics\n• Matches Title + Artist"]
+    
+    Step2 --> Step3["3️⃣ Cleaning & Filtering\n• Strips live intros & ads\n• Removes TED/podcasts\n• English language filter\n(28k ➔ 23k Tracks)"]
+    
+    Step3 --> Step4["4️⃣ LLM Narrative Extraction\n(OpenAI GPT-Luna)\n• Generates story summaries\n• Extracts core theme tags"]
+    
+    Step4 --> Step5["5️⃣ 96-Chip Ontology Mapping\n(QualIT Methodology)\n• Semantic clustering\n• 12 Macro × 8 Micro Chips"]
+    
+    Step5 --> Step6[("6️⃣ Neon Cloud PostgreSQL\n• Ingests into 3NF schema\n• Songs, Lyrics & Mappings\n• Creates B-Tree Indexes")]
+
+## System Architecture 
 ```mermaid
 flowchart TD
     User["User Input\n(Narrative Story / Emotion Chips)"] --> FastAPI["FastAPI Server\n(Google Cloud Run Container)"]
