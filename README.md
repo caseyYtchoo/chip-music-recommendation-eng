@@ -17,7 +17,7 @@ Awarded research grant funding by the **Undergraduate Research Scholars Program 
 
 - **23,000+ Song Corpus**: Built an end-to-end ETL pipeline that collected tracks from curated Spotify playlists and scraped full lyrics from Genius, transforming raw unstructured text into structured narrative summaries and multi-theme mappings for 23,000+ songs.
 - **96-Chip Emotion Taxonomy**: Hierarchical 2-tier ontology ($12\text{ Macro Domains} \times 8\text{ Sub-Nuance Micro Chips}$) constructed via LLM-enhanced semantic clustering, inspired by the topic modeling methodology proposed in QualIT [[Kapoor et al., 2024]]([https://arxiv.org/abs/2410.00290](https://arxiv.org/abs/2409.15626)).
-- **Sub-20ms Candidate Retrieval**: Achieved a **66% query latency reduction** (54.3ms $\rightarrow$ 18.6ms) on Cloud PostgreSQL using **Late Row Lookup (CTE)** and **B-Tree indexing**.
+- **66% Query Latency Reduction**: Achieved a query latency reduction (54.3ms → 18.6ms) on Cloud PostgreSQL using **Late Row Lookup (CTE)** and **B-Tree indexing**.
 - **Jaccard Purity Index Ranking**: Solved multi-tag dilution by prioritizing emotional concentration over raw keyword counts.
 - **2-Stage Hybrid Serving**: Combined ultra-fast indexed SQL candidate filtering (Stage 1) with real-time in-context LLM reasoning and 2nd-stage conversational refinement (Stage 2).
 
@@ -41,12 +41,12 @@ flowchart LR
 ```
 
 ### Pipeline Workflow Breakdown:
-1. **Track Metadata Extraction**: Scraped song titles and artist names across hundreds of curated Spotify playlists representing diverse mood niches.
+1. **Track Metadata Extraction**: Extracted song titles and artist names across hundreds of curated Spotify playlists using Spotify API.
 2. **Lyrics Scraping**: Automated Genius API/HTML scrapers to retrieve full raw lyrical texts matching track metadata.
-3. **Data Scrubbing & Purity Filtering**: Stripped noisy bracket tags (`[Instrumental]`, `[Chorus]`), removed non-musical transcripts (TED talks, podcasts), and filtered for pure English narrative songs (scrubbed ~5,000 noise records).
-4. **LLM Narrative Summarization**: Utilized GPT-Luna to generate dense 2~3 sentence character-arc summaries and qualitative emotional keywords for every track.
-5. **Hierarchical 96-Chip Mapping**: Applied semantic dictionary matching inspired by QualIT to categorize raw theme tokens into the structured 2-tier ontology ($12 \text{ Themes} \times 8 \text{ Nuance Chips}$).
-6. **Relational DB Ingestion (3NF)**: Batch-loaded 23,000+ records into Neon PostgreSQL across normalized tables (`songs`, `lyrics_info`, `song_chip_mappings`) and constructed B-Tree indexes for instant search.
+3. **Data Scrubbing & Purity Filtering**: Stripped noisy bracket tags (`[Instrumental]`, `[Chorus]`) and filtered for pure English narrative songs (scrubbed ~5,000 noise records).
+4. **LLM Narrative Summarization & Theme Extraction**: Utilized GPT-5.6 Luna to analyze raw lyrics, generating dense 2~3 sentence character-arc summaries along with multi-dimensional lyrical theme tags and keywords for every track.
+5. **Hierarchical 96-Chip Mapping**: Applied semantic dictionary matching and clustering inspired by QualIT to categorize raw theme tokens into the structured 2-tier ontology ($12 \text{ Themes} \times 8 \text{ Nuance Chips}$).
+6. **Relational DB Ingestion (3NF)**: Batch-loaded 23,000+ records into Neon PostgreSQL across 5 normalized tables (`categories`, `chips`, `songs`, `lyrics_info`, `song_chip_mappings`) and constructed B-Tree indexes for high-speed candidate retrieval.
 
 ---
 
