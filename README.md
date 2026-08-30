@@ -82,5 +82,48 @@ flowchart TD
   JOIN lyrics_info l ON w.song_id = l.song_id
   ORDER BY w.match_count DESC, w.jaccard_score DESC;
 
+
+---
+## Relational Database Schema (3NF)
+
+The database is strictly normalized into **Third Normal Form (3NF)** on PostgreSQL to prevent data anomalies and maximize query indexing efficiency:
+[categories] 1 ────< N [chips] 1 ────< N [song_chip_mappings] >──── N [songs] 1 ──── 1 [lyrics_info] 
+
+
+* **`categories`**: Macro-level emotional themes (`category_id`, `name_en`, `name_ko`)
+* **`chips`**: Micro-level emotion chips (`chip_id` [PK], `category_id` [FK], `name_en`, `name_ko`, `description`)
+* **`songs`**: Core track entity metadata (`song_id` [PK], `title`, `artist`)
+* **`lyrics_info`**: Detailed narrative and lyrical data (`song_id` [PK/FK], `lyrics_summary`, `raw_themes` [JSONB])
+* **`song_chip_mappings`**: Many-to-Many junction table (`song_id`, `chip_id` [Compound PK])
+  * **Indexed Column**: `CREATE INDEX idx_song_chip_chip_id ON song_chip_mappings(chip_id);`
+
+---
+
+## API Endpoints Specification
+
+| Method | Endpoint | Description | Key Payload / Response |
+|---|---|---|---|
+| `GET` | `/health` | Cloud Run container health check | `{"status": "healthy"}` |
+| `GET` | `/api/taxonomy` | Retrieves full 96-chip emotion hierarchy | `{"categories": [...]}` |
+| `POST` | `/api/suggest-chips` | Auto-extracts 3~5 emotion chips from story text | `{ "text": "..." }` ➔ `{ "suggested_chip_ids": [...] }` |
+| `POST` | `/api/recommend` | Stage 1 SQL retrieval + Stage 2 LLM curation | `{ "chip_ids": [...], "user_text": "...", "page": 1 }` |
+| `POST` | `/api/refine` | 2nd-Stage conversational feedback & re-ranking | `{ "chip_ids": [...], "feedback": "More melancholic" }` |
+
+---
+
+## Getting Started & Local Development
+
+### 1. Clone Repository & Install Dependencies
+```bash
+git clone https://github.com/caseyYtchoo/chip-music-recommendation-eng.git
+cd chip-music-recommendation-eng
+pip install -r requirements.txt psycopg2-binary
+
+### 1. Clone Repository & Install Dependencies
+```bash
+git clone https://github.com/caseyYtchoo/chip-music-recommendation-eng.git
+cd chip-music-recommendation-eng
+pip install -r requirements.txt psycopg2-binary
+
 ## References
 - Kapoor, S., Gil, A., Bhaduri, S., Mittal, A., & Mulkar, R. (2024). *Qualitative Insights Tool (QualIT): LLM Enhanced Topic Modeling*. arXiv preprint. [https://arxiv.org/abs/2410.00290](https://arxiv.org/abs/2409.15626)
