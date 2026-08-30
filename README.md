@@ -49,9 +49,9 @@ flowchart TD
 
 ### 2. Multi-Tag Spam Dilution vs. Jaccard Index Ranking
 * **The Problem**: Ranking by raw matching counts biased results toward songs with 15+ generic tags, resulting in poor recommendation purity.
-* **The Solution**: Implemented the **Jaccard Purity Index**:
-  $$\text{Jaccard Index} = \frac{|\text{Selected Chips} \cap \text{Song Inherent Chips}|}{|\text{Song Total Inherent Chips}|}$$
-  This ranks songs where the user's emotional query represents the *core focus* of the lyrics rather than a secondary mention.
+* **The Solution**: Implemented the **Jaccard Purity Index** to measure emotional concentration:
+  ```text
+  Jaccard Purity Score = |Selected Chips ∩ Song Inherent Chips| / |Song Total Inherent Chips|
 
 ### 3. PostgreSQL Query Latency Optimization (54.3ms $\rightarrow$ 18.6ms, 66% Speedup)
 * **The Problem**: Profiling with `EXPLAIN ANALYZE` revealed that joining large `lyrics_summary` text columns across 23,000 rows during grouping/filtering created a memory bottleneck (137 buffer reads, 54.3ms latency).
