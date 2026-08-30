@@ -25,7 +25,7 @@ Awarded research grant funding by the **Undergraduate Research Scholars Program 
 
 ## End-to-End Data Pipeline (Batch ETL)
 
-The offline data pipeline transforms raw, unstructured web data from multiple external sources into a highly structured 3NF relational database ready for sub-20ms inference:
+The offline data pipeline transforms raw, unstructured web data from multiple external sources into a highly structured 3NF relational database ready for real-time AI curation:
 
 ```mermaid
 flowchart LR
