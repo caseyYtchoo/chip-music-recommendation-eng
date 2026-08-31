@@ -77,25 +77,25 @@ flowchart TD
 ## Engineering Challenges & Problem Solving
 
 ### 1. Robust Data Cleaning: Scrubbing 28,000+ Unstructured Raw Transcripts
-* **The Problem**: Raw web-scraped lyrics from Genius and Spotify playlists contained severe data noise: non-musical TED talk transcripts, podcast dialogue scripts, pure instrumental tracks (`[Instrumental]`), live recording intros (`(Live at Wembley)`), and mixed non-English lyrics (Japanese, Spanish, etc,.). These noisy records corrupted emotional indexing and degraded recommendation quality.
-* **The Solution**: Engineered a multi-stage automated batch preprocessing pipeline combining **heuristic regex cleaners, lyrical repetition thresholds, and language detection filters**. Successfully filtered out ~5,000 corrupted records, yielding a clean, high-purity corpus of **23,000+ narrative English songs**.
+* **The Problem**: Raw web-scraped lyrics from Genius and Spotify playlists contained severe data noise: songs with excessively short or sparse lyrics, pure instrumental tracks (`[Instrumental]`), live recording intros (`(Live at Wembley)`), and mixed non-English lyrics (Japanese, Spanish, etc,.). These noisy records corrupted emotional indexing and degraded recommendation quality.
+* **The Solution**: Engineered a multi-stage preprocessing pipeline combining heuristic regex cleaners (bracket tag removal, Genius noise stripping), minimum lyric length filtering (< 15 words), word-level deduplication, and Unicode-based non-English character filtering. Successfully filtered out ~5,000 corrupted records, yielding a clean, high-purity corpus of **23,000+ narrative English songs**.
 
 ### 2. Semantic Collapse in Dense Vector Embeddings vs. Structured 96-Chip Ontology
 * **The Problem (Baseline Failure: `Sentence-BERT all-MiniLM-L6-v2`)**: 
   * In our baseline experiments, standard dense embedding models (**`Sentence-BERT all-MiniLM-L6-v2`**) using Cosine Similarity failed significantly on lyrical text.
-  * Poetic metaphors, repetitive choruses, and slang distorted the 384-dimensional vector space. Consequently, completely distinct emotional nuances—such as *"vengeful breakup anger"* vs. *"quiet melancholic resignation"*—were collapsed into the exact same dense vector cluster.
+  * Poetic metaphors, repetitive choruses, and slang distorted the 384-dimensional vector space. 
   * Complex narrative queries (e.g., *"quietly sacrificing for loved ones with unresolved guilt"*) consistently returned surface-level keyword false positives.
 * **The Solution**: 
-  * Replaced uninterpretable black-box vector distance with a **structured 96-Chip Hierarchical Emotion Taxonomy ($12 \text{ Domains} \times 8 \text{ Micro Chips}$)**, inspired by LLM topic modeling methodologies (QualIT).
+  * Replaced uninterpretable black-box vector distance with a **structured 96-Chip Hierarchical Emotion Taxonomy ($12\text{ Macro Domains} \times 8\text{ Sub-Nuance Micro Chips}$)**, inspired by LLM topic modeling methodologies (QualIT).
   * Built a deterministic semantic mapping that translates thousands of raw lyrical tokens into discrete, noise-free ontology chips.
 
-### 3. Multi-Tag Spam Dilution vs. Jaccard Purity Index Ranking
-* **The Problem**: Ranking candidates solely by raw matching counts biased results toward songs with 15+ broad, generic tags, drastically lowering recommendation purity.
+### 3. Candidate Tie-Breaking vs. Jaccard Purity Index Ranking
+* **The Problem**: When multiple candidate songs share the same number of matching chips with the user's selection, raw match count alone cannot differentiate them. A song where the matched chips represent its entire emotional core ranks identically to a song where the same chips are just a small fraction of its broader thematic range — leading to arbitrary and impure ranking.
 * **The Solution**: Formulated the **Jaccard Purity Index** to score songs based on emotional concentration:
-    ```text
+  ```text
   Jaccard Purity Score = |Selected Chips ∩ Song Inherent Chips| / |Song Total Inherent Chips|
   ```
-* **Result**: Prioritizes songs where the user's emotional query represents the **core lyrical focus** rather than a passing secondary mention.
+* **Result**: Prioritizes songs where the user's emotional query represents the core lyrical focus rather than a passing secondary mention.
 ### 4. PostgreSQL Query Latency Optimization (54.3ms $\rightarrow$ 18.6ms, 66% Speedup)
 * **The Problem**: Profiling with `EXPLAIN ANALYZE` revealed that joining large `lyrics_summary` text columns across 23,000 rows during grouping and sorting created a memory bottleneck (137 buffer reads, 54.3ms latency).
 * **The Solution**: Applied **Late Row Lookup (CTE)** to defer heavy text joins until after top-30 candidate IDs are filtered via B-Tree index:
