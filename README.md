@@ -45,7 +45,7 @@ flowchart LR
 2. **Lyrics Scraping**: Automated Genius API/HTML scrapers to retrieve full raw lyrical texts matching track metadata.
 3. **Data Scrubbing & Purity Filtering**: Stripped noisy bracket tags (`[Instrumental]`, `[Chorus]`) and filtered for pure English narrative songs (scrubbed ~5,000 noise records).
 4. **LLM Narrative Summarization & Theme Extraction**: Utilized GPT-5.6 Luna to analyze raw lyrics, generating dense 2~3 sentence character-arc summaries along with multi-dimensional lyrical theme tags and keywords for every track.
-5. **Hierarchical 96-Chip Mapping**: Applied semantic dictionary matching and clustering inspired by QualIT to categorize raw theme tokens into the structured 2-tier ontology ($12 \text{ Themes} \times 8 \text{ Nuance Chips}$).
+5. **Hierarchical 96-Chip Mapping**: Applied a two-stage LLM-driven pipeline inspired by QualIT: (1) prompted GPT to perform bottom-up semantic clustering on the top 500 most frequent theme tokens across 23,000 songs, deriving the structured 2-tier ontology ($12 \text{ Themes} \times 8 \text{ Nuance Chips}$); (2) batch-mapped all 18,373 unique raw theme keywords to their corresponding chips via parallel LLM semantic matching across 53 batches.
 6. **Relational DB Ingestion (3NF)**: Batch-loaded 23,000+ records into Neon PostgreSQL across 5 normalized tables (`categories`, `chips`, `songs`, `lyrics_info`, `song_chip_mappings`) and constructed B-Tree indexes for high-speed candidate retrieval.
 
 ---
