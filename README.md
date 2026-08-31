@@ -67,10 +67,10 @@ flowchart TD
 ```
 
 ### Serving Architecture Breakdown:
-1. **Dual-Path Chip Resolution**: Users can either type a narrative story (routed to GPT-Luna for automatic chip extraction via `/api/suggest-chips`) or manually click emotion chips directly on the UI. Both paths converge into a resolved set of chip IDs.
+1. **Dual-Path Chip Resolution**: Users can either type a narrative story (routed to GPT-5.6 Luna for automatic chip extraction via `/api/suggest-chips`) or manually click emotion chips directly on the UI. Both paths converge into a resolved set of chip IDs.
 2. **FastAPI Backend (Google Cloud Run)**: Containerized FastAPI server handles all routing across three endpoints — `/api/suggest-chips`, `/api/recommend`, and `/api/refine` — with lazy taxonomy caching (`get_taxonomy_data()`) ensuring near-instant container cold starts.
 3. **Stage 1 — Fast SQL Candidate Filtering**: Resolved chip IDs are passed to Neon PostgreSQL, where a B-Tree indexed CTE query applies Jaccard Purity Index scoring to filter the top 30 emotionally concentrated candidate songs from 23,000+ tracks with a 66% latency reduction.
-4. **Stage 2 — LLM Narrative Curation**: The top 30 candidate lyrics summaries are passed in-context to OpenAI GPT-Luna, which ranks the final Top 3 songs and generates personalized 1:1 curation reasons explaining the emotional and narrative alignment for each track.
+4. **Stage 2 — LLM Narrative Curation**: The top 30 candidate lyrics summaries are passed in-context to OpenAI GPT-5.6 Luna, which ranks the final Top 3 songs and generates personalized 1:1 curation reasons explaining the emotional and narrative alignment for each track.
 5. **2nd-Stage Conversational Refinement**: After receiving results, users can submit natural language feedback (e.g., *"More melancholic and raw"*, *"More hopeful"*) via `/api/refine`, triggering GPT to re-rank the same candidate pool with the updated emotional direction.
 6. **Responsive Interactive Web UI (`chip_eng.html`)**: All results are rendered on a dark neon-themed frontend featuring animated emotion chips, YouTube/Spotify quick-search buttons, matched chip badges, theme tags, and expandable lyrical narrative summaries.
 ---
