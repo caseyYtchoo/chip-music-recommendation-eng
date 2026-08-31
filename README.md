@@ -41,7 +41,7 @@ flowchart LR
 ```
 
 ### Pipeline Workflow Breakdown:
-1. **Track Metadata Extraction**: Extracted song titles and artist names across hundreds of curated Spotify playlists using Spotify API.
+1. **Track Metadata Extraction**: Extracted song titles and artist names from curated Spotify playlists using Spotify API.
 2. **Lyrics Scraping**: Automated Genius API/HTML scrapers to retrieve full raw lyrical texts matching track metadata.
 3. **Data Scrubbing & Purity Filtering**: Stripped noisy bracket tags (`[Instrumental]`, `[Chorus]`) and filtered for pure English narrative songs (scrubbed ~5,000 noise records).
 4. **LLM Narrative Summarization & Theme Extraction**: Utilized GPT-5.6 Luna to analyze raw lyrics, generating dense 2~3 sentence character-arc summaries along with multi-dimensional lyrical theme tags and keywords for every track.
